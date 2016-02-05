@@ -356,6 +356,91 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             Assert.Equal(savedValue, items.Select(item => item.Value));
         }
 
+        [Fact]
+        public async Task ProcessAsync_WithItems_AndNoModelExpression_GeneratesExpectedOutput()
+        {
+            // Arrange
+            var originalAttributes = new TagHelperAttributeList
+            {
+                { "class", "form-control" },
+            };
+            var originalPostContent = "original content";
+
+            var expectedAttributes = new TagHelperAttributeList(originalAttributes);
+            var selectItems = new SelectList(Enumerable.Range(0, 5));
+            var expectedOptions = string.Join(
+                Environment.NewLine,
+                selectItems.Select(i => $"<option>HtmlEncode[[{i.Text}]]</option>")) + Environment.NewLine;
+
+            var expectedPreContent = "original pre-content";
+            var expectedContent = "original content";
+            var expectedPostContent = originalPostContent + expectedOptions;
+            var expectedTagName = "select";
+
+            var tagHelperContext = new TagHelperContext(
+                allAttributes: new TagHelperAttributeList(
+                    Enumerable.Empty<TagHelperAttribute>()),
+                items: new Dictionary<object, object>(),
+                uniqueId: "test");
+            var output = new TagHelperOutput(
+                expectedTagName,
+                originalAttributes,
+                getChildContentAsync: (useCachedResult, encoder) =>
+                {
+                    var tagHelperContent = new DefaultTagHelperContent();
+                    tagHelperContent.AppendHtml("Something");
+                    return Task.FromResult<TagHelperContent>(tagHelperContent);
+                })
+            {
+                TagMode = TagMode.SelfClosing,
+            };
+            output.PreContent.AppendHtml(expectedPreContent);
+            output.Content.AppendHtml(expectedContent);
+            output.PostContent.AppendHtml(originalPostContent);
+
+            var metadataProvider = new TestModelMetadataProvider();
+            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var viewContext = TestableHtmlGenerator.GetViewContext(
+                model: null,
+                htmlGenerator: htmlGenerator,
+                metadataProvider: metadataProvider);
+
+            var savedDisabled = selectItems.Select(item => item.Disabled).ToList();
+            var savedGroup = selectItems.Select(item => item.Group).ToList();
+            var savedSelected = selectItems.Select(item => item.Selected).ToList();
+            var savedText = selectItems.Select(item => item.Text).ToList();
+            var savedValue = selectItems.Select(item => item.Value).ToList();
+
+            var tagHelper = new SelectTagHelper(htmlGenerator)
+            {
+                For = null,
+                Items = selectItems,
+                ViewContext = viewContext,
+            };
+
+            // Act
+            tagHelper.Init(tagHelperContext);
+            await tagHelper.ProcessAsync(tagHelperContext, output);
+
+            // Assert
+            Assert.Equal(TagMode.SelfClosing, output.TagMode);
+            Assert.Equal(expectedAttributes, output.Attributes);
+            Assert.Equal(expectedPreContent, output.PreContent.GetContent());
+            Assert.Equal(expectedContent, output.Content.GetContent());
+            Assert.Equal(expectedPostContent, HtmlContentUtilities.HtmlContentToString(output.PostContent));
+            Assert.Equal(expectedTagName, output.TagName);
+
+            Assert.Single(
+                tagHelperContext.Items,
+                entry => (Type)entry.Key == typeof(SelectTagHelper));
+
+            Assert.Equal(savedDisabled, selectItems.Select(item => item.Disabled));
+            Assert.Equal(savedGroup, selectItems.Select(item => item.Group));
+            Assert.Equal(savedSelected, selectItems.Select(item => item.Selected));
+            Assert.Equal(savedText, selectItems.Select(item => item.Text));
+            Assert.Equal(savedValue, selectItems.Select(item => item.Value));
+        }
+
         [Theory]
         [MemberData(nameof(GeneratesExpectedDataSet))]
         public async Task ProcessAsyncInTemplate_WithItems_GeneratesExpectedOutput_DoesNotChangeSelectList(

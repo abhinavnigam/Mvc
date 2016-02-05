@@ -588,6 +588,63 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         }
 
         /// <inheritdoc />
+        public IHtmlContent GenerateGroupsAndOptions(string optionLabel, IEnumerable<SelectListItem> selectList)
+        {
+            var listItemBuilder = new HtmlContentBuilder();
+
+            // Make optionLabel the first item that gets rendered.
+            if (optionLabel != null)
+            {
+                listItemBuilder.AppendLine(GenerateOption(new SelectListItem()
+                {
+                    Text = optionLabel,
+                    Value = string.Empty,
+                    Selected = false,
+                }));
+            }
+
+            // Group items in the SelectList if requested.
+            // Treat each item with Group == null as a member of a unique group
+            // so they are added according to the original order.
+            var groupedSelectList = selectList.GroupBy<SelectListItem, int>(
+                item => (item.Group == null) ? item.GetHashCode() : item.Group.GetHashCode());
+            foreach (var group in groupedSelectList)
+            {
+                var optGroup = group.First().Group;
+                if (optGroup != null)
+                {
+                    var groupBuilder = new TagBuilder("optgroup");
+                    if (optGroup.Name != null)
+                    {
+                        groupBuilder.MergeAttribute("label", optGroup.Name);
+                    }
+
+                    if (optGroup.Disabled)
+                    {
+                        groupBuilder.MergeAttribute("disabled", "disabled");
+                    }
+
+                    groupBuilder.InnerHtml.AppendLine();
+                    foreach (var item in group)
+                    {
+                        groupBuilder.InnerHtml.AppendLine(GenerateOption(item));
+                    }
+
+                    listItemBuilder.AppendLine(groupBuilder);
+                }
+                else
+                {
+                    foreach (var item in group)
+                    {
+                        listItemBuilder.AppendLine(GenerateOption(item));
+                    }
+                }
+            }
+
+            return listItemBuilder;
+        }
+
+        /// <inheritdoc />
         public virtual TagBuilder GenerateTextArea(
             ViewContext viewContext,
             ModelExplorer modelExplorer,
@@ -1455,62 +1512,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             return newSelectList;
-        }
-
-        private IHtmlContent GenerateGroupsAndOptions(string optionLabel, IEnumerable<SelectListItem> selectList)
-        {
-            var listItemBuilder = new HtmlContentBuilder();
-
-            // Make optionLabel the first item that gets rendered.
-            if (optionLabel != null)
-            {
-                listItemBuilder.AppendLine(GenerateOption(new SelectListItem()
-                {
-                    Text = optionLabel,
-                    Value = string.Empty,
-                    Selected = false,
-                }));
-            }
-
-            // Group items in the SelectList if requested.
-            // Treat each item with Group == null as a member of a unique group
-            // so they are added according to the original order.
-            var groupedSelectList = selectList.GroupBy<SelectListItem, int>(
-                item => (item.Group == null) ? item.GetHashCode() : item.Group.GetHashCode());
-            foreach (var group in groupedSelectList)
-            {
-                var optGroup = group.First().Group;
-                if (optGroup != null)
-                {
-                    var groupBuilder = new TagBuilder("optgroup");
-                    if (optGroup.Name != null)
-                    {
-                        groupBuilder.MergeAttribute("label", optGroup.Name);
-                    }
-
-                    if (optGroup.Disabled)
-                    {
-                        groupBuilder.MergeAttribute("disabled", "disabled");
-                    }
-
-                    groupBuilder.InnerHtml.AppendLine();
-                    foreach (var item in group)
-                    {
-                        groupBuilder.InnerHtml.AppendLine(GenerateOption(item));
-                    }
-
-                    listItemBuilder.AppendLine(groupBuilder);
-                }
-                else
-                {
-                    foreach (var item in group)
-                    {
-                        listItemBuilder.AppendLine(GenerateOption(item));
-                    }
-                }
-            }
-
-            return listItemBuilder;
         }
 
         private IHtmlContent GenerateOption(SelectListItem item)
