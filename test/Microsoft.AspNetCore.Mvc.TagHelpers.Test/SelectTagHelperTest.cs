@@ -368,9 +368,11 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
 
             var expectedAttributes = new TagHelperAttributeList(originalAttributes);
             var selectItems = new SelectList(Enumerable.Range(0, 5));
-            var expectedOptions = string.Join(
-                Environment.NewLine,
-                selectItems.Select(i => $"<option>HtmlEncode[[{i.Text}]]</option>")) + Environment.NewLine;
+            var expectedOptions = "<option>HtmlEncode[[0]]</option>" + Environment.NewLine
+                + "<option>HtmlEncode[[1]]</option>" + Environment.NewLine
+                + "<option>HtmlEncode[[2]]</option>" + Environment.NewLine
+                + "<option>HtmlEncode[[3]]</option>" + Environment.NewLine
+                + "<option>HtmlEncode[[4]]</option>" + Environment.NewLine;
 
             var expectedPreContent = "original pre-content";
             var expectedContent = "original content";
@@ -405,15 +407,8 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
                 htmlGenerator: htmlGenerator,
                 metadataProvider: metadataProvider);
 
-            var savedDisabled = selectItems.Select(item => item.Disabled).ToList();
-            var savedGroup = selectItems.Select(item => item.Group).ToList();
-            var savedSelected = selectItems.Select(item => item.Selected).ToList();
-            var savedText = selectItems.Select(item => item.Text).ToList();
-            var savedValue = selectItems.Select(item => item.Value).ToList();
-
             var tagHelper = new SelectTagHelper(htmlGenerator)
             {
-                For = null,
                 Items = selectItems,
                 ViewContext = viewContext,
             };
@@ -433,12 +428,6 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             Assert.Single(
                 tagHelperContext.Items,
                 entry => (Type)entry.Key == typeof(SelectTagHelper));
-
-            Assert.Equal(savedDisabled, selectItems.Select(item => item.Disabled));
-            Assert.Equal(savedGroup, selectItems.Select(item => item.Group));
-            Assert.Equal(savedSelected, selectItems.Select(item => item.Selected));
-            Assert.Equal(savedText, selectItems.Select(item => item.Text));
-            Assert.Equal(savedValue, selectItems.Select(item => item.Value));
         }
 
         [Theory]

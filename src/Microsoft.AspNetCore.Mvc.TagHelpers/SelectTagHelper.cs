@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace Microsoft.AspNetCore.Mvc.TagHelpers
 {
     /// <summary>
-    /// <see cref="ITagHelper"/> implementation targeting &lt;select&gt; elements with an <c>asp-for</c> and/or
+    /// <see cref="ITagHelper"/> implementation targeting &lt;select&gt; elements with a <c>asp-for</c> and/or
     /// <c>asp-items</c> attribute(s).
     /// </summary>
     [HtmlTargetElement("select", Attributes = ForAttributeName)]
@@ -72,8 +72,9 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (For == null && Items != null)
+            if (For == null)
             {
+                // Informs contained elements that they're running within a targeted <select/> element.
                 context.Items[typeof(SelectTagHelper)] = null;
                 return;
             }
