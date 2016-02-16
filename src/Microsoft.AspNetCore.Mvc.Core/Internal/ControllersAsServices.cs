@@ -28,12 +28,10 @@ namespace Microsoft.AspNetCore.Mvc.Internal
 
             StaticControllerTypeProvider controllerTypeProvider = null;
 
-            var existingServiceDescriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IControllerTypeProvider));
-            controllerTypeProvider = existingServiceDescriptor?.ImplementationInstance as StaticControllerTypeProvider;
-            if (controllerTypeProvider == null)
-            {
-                controllerTypeProvider = new StaticControllerTypeProvider();
-            }
+            controllerTypeProvider = services
+                .Where(s => s.ServiceType == typeof(IControllerTypeProvider))
+                .Select(s => s.ImplementationInstance as StaticControllerTypeProvider).FirstOrDefault()
+                ?? new StaticControllerTypeProvider();
 
             foreach (var type in types)
             {
