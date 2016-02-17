@@ -749,9 +749,9 @@ namespace Microsoft.AspNetCore.Mvc.Internal
 
             var validator = CreateValidator();
 
-            modelState.Add("items[0]", new ModelStateEntry());
-            modelState.Add("items[1]", new ModelStateEntry());
-            modelState.Add("items[2]", new ModelStateEntry());
+            modelState.Add("items[0]", Mock.Of<ModelStateEntry>());
+            modelState.Add("items[1]", Mock.Of<ModelStateEntry>());
+            modelState.Add("items[2]", Mock.Of<ModelStateEntry>());
             validationState.Add(model, new ValidationStateEntry()
             {
                 Key = "items",
@@ -797,10 +797,10 @@ namespace Microsoft.AspNetCore.Mvc.Internal
                 { "BarKey", "BarValue" }
             };
 
-            modelState.Add("items[0].Key", new ModelStateEntry());
-            modelState.Add("items[0].Value", new ModelStateEntry());
-            modelState.Add("items[1].Key", new ModelStateEntry());
-            modelState.Add("items[1].Value", new ModelStateEntry());
+            modelState.Add("items[0].Key", Mock.Of<ModelStateEntry>());
+            modelState.Add("items[0].Value", Mock.Of<ModelStateEntry>());
+            modelState.Add("items[1].Key", Mock.Of<ModelStateEntry>());
+            modelState.Add("items[1].Value", Mock.Of<ModelStateEntry>());
             validationState.Add(model, new ValidationStateEntry() { Key = "items" });
 
             // Act

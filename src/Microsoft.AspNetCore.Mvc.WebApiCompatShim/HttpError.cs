@@ -94,8 +94,8 @@ namespace System.Web.Http
 
             Message = ShimResources.HttpError_BadRequest;
 
-            var modelStateError = new HttpError();
-            foreach (KeyValuePair<string, ModelStateEntry> keyModelStatePair in modelState)
+            var httpError = new HttpError();
+            foreach (var keyModelStatePair in modelState)
             {
                 var key = keyModelStatePair.Key;
                 var errors = keyModelStatePair.Value.Errors;
@@ -115,11 +115,11 @@ namespace System.Web.Http
                                     error.ErrorMessage;
                         }
                     }).ToArray();
-                    modelStateError.Add(key, errorMessages);
+                    httpError.Add(key.Value, errorMessages);
                 }
             }
 
-            Add(HttpErrorKeys.ModelStateKey, modelStateError);
+            Add(HttpErrorKeys.ModelStateKey, httpError);
         }
 
         /// <summary>

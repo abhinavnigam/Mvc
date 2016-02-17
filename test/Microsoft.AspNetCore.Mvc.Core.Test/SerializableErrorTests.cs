@@ -3,6 +3,7 @@
 
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Moq;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Mvc
@@ -72,10 +73,10 @@ namespace Microsoft.AspNetCore.Mvc
             var modelState = new ModelStateDictionary();
             modelState.Add(
                 "key1",
-                new ModelStateEntry());
+                Mock.Of<ModelStateEntry>());
             modelState.Add(
                 "key2",
-                new ModelStateEntry());
+                Mock.Of<ModelStateEntry>());
 
             // Act
             var serializableError = new SerializableError(modelState);

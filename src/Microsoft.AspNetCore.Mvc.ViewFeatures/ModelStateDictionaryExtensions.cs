@@ -135,7 +135,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
                     var entries = modelState.FindKeysWithPrefix(childKey).ToArray();
                     foreach (var entry in entries)
                     {
-                        modelState.Remove(entry.Key);
+                        modelState.Remove(entry.Key.Value);
                     }
                 }
             }
@@ -144,7 +144,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
                 var entries = modelState.FindKeysWithPrefix(modelKey).ToArray();
                 foreach (var entry in entries)
                 {
-                    modelState.Remove(entry.Key);
+                    modelState.Remove(entry.Key.Value);
                 }
             }
         }

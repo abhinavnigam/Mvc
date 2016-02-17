@@ -692,12 +692,12 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             // Arrange
             var metadataProvider = new EmptyModelMetadataProvider();
             var dictionary = new ModelStateDictionary();
-            dictionary["Name"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["Name"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("Name", "MyProperty invalid.");
-            dictionary["Id"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["Id"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("Id", "Id invalid.");
             dictionary.AddModelError("Id", "Id is required.");
-            dictionary["Category"] = new ModelStateEntry { ValidationState = ModelValidationState.Valid };
+            dictionary["Category"] = new TestModelStateEntry { ValidationState = ModelValidationState.Valid };
 
             // Act
             ModelBindingHelper.ClearValidationStateForModel(
@@ -723,16 +723,16 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             // Arrange
             var metadataProvider = new EmptyModelMetadataProvider();
             var dictionary = new ModelStateDictionary();
-            dictionary["[0].Name"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["[0].Name"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("[0].Name", "Name invalid.");
-            dictionary["[0].Id"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["[0].Id"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("[0].Id", "Id invalid.");
             dictionary.AddModelError("[0].Id", "Id required.");
-            dictionary["[0].Category"] = new ModelStateEntry { ValidationState = ModelValidationState.Valid };
+            dictionary["[0].Category"] = new TestModelStateEntry { ValidationState = ModelValidationState.Valid };
 
-            dictionary["[1].Name"] = new ModelStateEntry { ValidationState = ModelValidationState.Valid };
-            dictionary["[1].Id"] = new ModelStateEntry { ValidationState = ModelValidationState.Valid };
-            dictionary["[1].Category"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["[1].Name"] = new TestModelStateEntry { ValidationState = ModelValidationState.Valid };
+            dictionary["[1].Id"] = new TestModelStateEntry { ValidationState = ModelValidationState.Valid };
+            dictionary["[1].Category"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("[1].Category", "Category invalid.");
 
             // Act
@@ -770,20 +770,20 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var metadataProvider = new TestModelMetadataProvider();
 
             var dictionary = new ModelStateDictionary();
-            dictionary["product.Name"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["product.Name"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("product.Name", "Name invalid.");
-            dictionary["product.Id"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["product.Id"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("product.Id", "Id invalid.");
             dictionary.AddModelError("product.Id", "Id required.");
-            dictionary["product.Category"] = new ModelStateEntry { ValidationState = ModelValidationState.Valid };
-            dictionary["product.Category.Name"] = new ModelStateEntry { ValidationState = ModelValidationState.Valid };
-            dictionary["product.Order[0].Name"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["product.Category"] = new TestModelStateEntry { ValidationState = ModelValidationState.Valid };
+            dictionary["product.Category.Name"] = new TestModelStateEntry { ValidationState = ModelValidationState.Valid };
+            dictionary["product.Order[0].Name"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("product.Order[0].Name", "Order name invalid.");
             dictionary["product.Order[0].Address.Street"] =
-                new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+                new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("product.Order[0].Address.Street", "Street invalid.");
-            dictionary["product.Order[1].Name"] = new ModelStateEntry { ValidationState = ModelValidationState.Valid };
-            dictionary["product.Order[0]"] = new ModelStateEntry { ValidationState = ModelValidationState.Invalid };
+            dictionary["product.Order[1].Name"] = new TestModelStateEntry { ValidationState = ModelValidationState.Valid };
+            dictionary["product.Order[0]"] = new TestModelStateEntry { ValidationState = ModelValidationState.Invalid };
             dictionary.AddModelError("product.Order[0]", "Order invalid.");
 
             // Act
@@ -1373,6 +1373,10 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             Value2 = 2,
             Value4 = 4,
             Value8 = 8
+        }
+
+        private class TestModelStateEntry : ModelStateEntry
+        {
         }
     }
 }

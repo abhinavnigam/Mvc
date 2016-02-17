@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Mvc
                             Resources.SerializableError_DefaultError : error.ErrorMessage;
                     }).ToArray();
 
-                    Add(key, errorMessages);
+                    Add(key.Value, errorMessages);
                 }
             }
         }
